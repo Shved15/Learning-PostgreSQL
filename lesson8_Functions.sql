@@ -134,3 +134,167 @@ ________________________________________________________________________________
     -- * VARIADIC - array of input parameters
 
     -- * DEFAULT value
+
+CREATE OR REPLACE FUNCTION get_product_price_by_name(prod_name varchar) RETURNS real AS $$
+	SELECT unit_price
+	FROM products
+	WHERE product_name = prod_name
+$$ language sql;
+
+-- at now client code can using our function
+SELECT get_product_price_by_name('Chocolade') AS price;
+
+SELECT *
+FROM products;
+
+
+--what if the client code wants to get the price bounds of all products
+DROP FUNCTION IF EXISTS get_price_boundaries;
+CREATE OR REPLACE FUNCTION get_price_boundaries(OUT max_price real, OUT min_price real) AS $$
+	SELECT MAX(unit_price), MIN(unit_price)
+	FROM products
+$$ LANGUAGE SQL;
+
+SELECT get_price_boundaries() AS price;
+
+-- same with different columns
+SELECT * FROM get_price_boundaries();
+
+
+
+-- functions returns with discontinued
+DROP FUNCTION IF EXISTS get_price_boundaries_by_discontinuity;
+CREATE OR REPLACE FUNCTION get_price_boundaries_by_discontinuity(IN is_discontinued int, OUT max_price real, OUT min_price real) AS $$
+	SELECT MAX(unit_price), MIN(unit_price)
+	FROM products
+	WHERE discontinued = is_discontinued
+$$ LANGUAGE SQL;
+
+-- RECORD
+select get_price_boundaries_by_discontinuity(1);
+
+--WITH TWO COLUMNS
+SELECT * FROM get_price_boundaries_by_discontinuity(1);
+
+
+-- USE DEFAULT
+DROP FUNCTION IF EXISTS get_price_boundaries_by_discontinuity;
+CREATE OR REPLACE FUNCTION get_price_boundaries_by_discontinuity
+	 (IN is_discontinued int DEFAULT 1, OUT max_price real, OUT min_price real) AS $$
+	SELECT MAX(unit_price), MIN(unit_price)
+	FROM products
+	WHERE discontinued = is_discontinued
+$$ LANGUAGE SQL;
+
+
+SELECT get_price_boundaries_by_discontinuity(); --with default
+SELECT get_price_boundaries_by_discontinuity(0);
+SELECT get_price_boundaries_by_discontinuity(1);
+
+________________________________________________________________________________________________________
+
+
+--- ### Return multiply rows (set strings) ### ---
+* RETURNS SETOF data_type -- return n-values of data_type type
+
+* RETURNS SETOF table -- if need to return all columns from table or custom(пользовательского) type
+
+* RETURNS SETOF record -- only when the column types in the result set are not known in advance(заранее неизвестны)
+
+* RETURNS TABLE(column_name, data_type, ...) -- the same as setof table, but we have the ability to explicitly specify the returned columns
+
+* Return via out-parameters
+
+
+
+--*if we need to return average prices sorted by product category*--
+CREATE OR REPLACE FUNCTION get_average_prices_by_product_categories()
+		RETURNS SETOF double precision AS $$
+
+	SELECT AVG(unit_price)
+	FROM products
+	GROUP BY category_id
+
+$$ LANGUAGE SQL;
+
+SELECT * FROM get_average_prices_by_product_categories() AS average_prices;
+
+
+--*How to return a set of columns*--
+--*With OUT parameters*--
+drop function if exists get_average_prices_by_product_categories;
+CREATE OR REPLACE FUNCTION get_average_prices_by_product_categories(OUT sum_price real, OUT avg_price float8)
+		RETURNS SETOF RECORD AS $$
+
+	SELECT SUM(unit_price), AVG(unit_price)
+	FROM products
+	GROUP BY category_id;
+
+$$ LANGUAGE SQL;
+
+SELECT sum_price FROM get_average_prices_by_product_categories();
+select sum_price, avg_price from get_average_prices_by_product_categories();
+
+
+--won't work
+SELECT sum_of, in_avg FROM get_average_prices_by_product_categories();
+
+--will work
+SELECT sum_price AS sum_of, avg_price AS in_avg
+FROM get_average_prices_by_product_categories();
+
+
+--*How to return a set of columns*--
+--*WithOUT OUT parameters*--
+DROP FUNCTION IF EXISTS get_average_prices_by_product_categories;
+CREATE OR REPLACE FUNCTION get_average_prices_by_product_categories()
+		RETURNS SETOF RECORD AS $$
+
+	SELECT SUM(unit_price), AVG(unit_price)
+	FROM products
+	GROUP BY category_id;
+
+$$ LANGUAGE SQL;
+
+--won't work in all 4 syntax options
+SELECT sum_price FROM get_average_prices_by_product_categories();
+SELECT sum_price, avg_price FROM get_average_prices_by_product_categories();
+SELECT sum_of, in_avg FROM get_average_prices_by_product_categories();
+SELECT * FROM get_average_prices_by_product_categories();
+
+--works only this
+SELECT * FROM get_average_prices_by_product_categories() AS (sum_price real, avg_price float8);
+
+
+
+---*a function that returns customers sorted by country*--
+DROP FUNCTION IF EXISTS get_customers_by_country;
+CREATE OR REPLACE FUNCTION get_customers_by_country(customer_country varchar)
+		RETURNS TABLE(char_code char, company_name varchar) AS $$
+
+	SELECT customer_id, company_name
+	FROM customers
+	WHERE country = customer_country
+
+$$ LANGUAGE SQL;
+
+
+--The rule is the same as when we use RETURNS SETOF
+SELECT * FROM get_customers_by_country('USA');
+SELECT company_name FROM get_customers_by_country('USA');
+SELECT char_code, company_name FROM get_customers_by_country('USA');
+
+
+---*setof table*---
+DROP FUNCTION IF EXISTS get_customers_by_country;
+CREATE OR REPLACE FUNCTION get_customers_by_country(customer_country varchar)
+		RETURNS SETOF customers AS $$
+
+	-- won't work: select company_name, contact_name
+	SELECT *
+	FROM customers
+	WHERE country = customer_country
+
+$$ LANGUAGE SQL;
+
+SELECT * FROM get_customers_by_country('USA');

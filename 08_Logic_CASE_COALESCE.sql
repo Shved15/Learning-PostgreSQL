@@ -1,4 +1,4 @@
---- Lesson 7: Logical operators
+--- № 8: Logical operators
 
 
 --- ### CASE WHEN ### ---

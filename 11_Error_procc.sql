@@ -1,4 +1,4 @@
--- Lesson 10: Errors processing
+-- № 11: Errors processing
 
 --If an incorrect parameter is received in the function, it is necessary to stop
 --the execution of the function and send a signal to the top about the problems

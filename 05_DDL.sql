@@ -1,4 +1,4 @@
--- Lesson 4: DDL: create DB, tables and their modification
+-- № 5: DDL: create DB, tables and their modification
 
 ________________________________________________________________________________________________________
 --- ## DDL: Data Definition Language ## ---

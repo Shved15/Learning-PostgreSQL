@@ -1,4 +1,4 @@
--- Lesson 8: SQL functions
+-- № 9: SQL functions
 
 -- * A function is a database object that takes arguments and returns a result.
 -- (Функция это обхект ДБ, принимающий аргументы и возвращающий результат)

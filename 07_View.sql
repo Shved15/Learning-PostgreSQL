@@ -1,4 +1,4 @@
---- Lesson 6: VIEW ---
+--- № 7: VIEW ---
 
 -- View is a saved query in the form of a DB object (virtual table)
 --(сохраненный запрос в виде обхекта ДБ(виртуальная таблица))

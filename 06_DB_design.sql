@@ -1,4 +1,4 @@
-Database design
+-- № 6 - Database design
 
     - Domain representation problem (поблема представления предметной области) #предм. обл. - домен#
     - Logic design

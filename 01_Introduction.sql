@@ -1,4 +1,4 @@
--- lesson 1 - Introduction in Postgres
+-- № 1 - Introduction in Postgres
 
 --Database - a collection of related data (База данных - набор взаимосвязаныых данных)
 

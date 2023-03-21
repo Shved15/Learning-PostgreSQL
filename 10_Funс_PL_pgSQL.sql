@@ -1,4 +1,4 @@
---Lesson 9: PL/pgSQL
+-- № 10: PL/pgSQL
 
 --- Syntax ---
 CREATE FUNCTION func_name([arg1, arg2...]) RETURNS data_type AS $$

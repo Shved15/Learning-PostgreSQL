@@ -1,4 +1,4 @@
---Lesson 1: Basic SELECT queries
+-- № 2: Basic SELECT queries
 
 
 ---select all data from products table---
